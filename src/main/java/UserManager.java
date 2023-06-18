@@ -9,9 +9,10 @@ public class UserManager {
     public User registerUser(String newUsername, String newPassword) {
 
         int userID = getNextUserID();
+        incrementNextUserID();
 
         try (FileWriter fw = new FileWriter(USER_DATA_FILE, true); PrintWriter pw = new PrintWriter(fw)) {
-            pw.println(userID +"," + newUsername + "," + newPassword);
+            pw.print("\n" + userID + "," + newUsername + "," + newPassword);
         } catch (IOException e) {
             System.out.println("Error writing to file!");
         }
@@ -32,8 +33,18 @@ public class UserManager {
                 }
             }
         } catch (IOException e) {
-            System.err.format("IOException: %s%n", e);
+            System.out.println("Error reading file!");
         }
         return -1;  // Return an invalid ID if something went wrong
+    }
+
+    public void incrementNextUserID() {
+        int nextUserID = getNextUserID() + 1;
+        try (FileWriter fw = new FileWriter(MISC_DATA_FILE);
+             PrintWriter pw = new PrintWriter(fw)) {
+            pw.println("NextUserID," + nextUserID);
+        } catch (IOException e) {
+            System.err.format("IOException: %s%n", e);
+        }
     }
 }

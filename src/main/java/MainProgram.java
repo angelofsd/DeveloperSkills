@@ -37,13 +37,23 @@ public class MainProgram {
 
                     System.out.println("Enter password:");
                     String password = scanner.nextLine();
+
+                    currentUser = userManager.loginUser(username, password);
+                    if (currentUser == null) {
+                        System.out.println("invalid credentials, please try again");
+                    }
                     break;
                 case 2:
                     System.out.println("Please Register: \n Enter Username: ");
-                    String newUserName = scanner.nextLine();
+                    String newUsername = scanner.nextLine();
 
                     System.out.println("Create a Password:");
-                    String newPassWord = scanner.nextLine();
+                    String newPassword = scanner.nextLine();
+
+                    currentUser = userManager.registerUser(newUsername, newPassword);
+                    if(currentUser == null) {
+                        System.out.println("Registration failed, please try again.");
+                    }
                     break;
 
                 default:

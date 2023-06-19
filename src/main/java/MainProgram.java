@@ -6,6 +6,9 @@ public class MainProgram {
     private BashTrainer bashTrainer;
     private SQLGame sqlGame;
     private Scanner scanner;
+    public static final String WELCOME_MESSAGE = "Welcome to the Developer Skills Tainer!\nPlease login to continue:";
+    public static final String GAME_MENU = "1. Bash Trainer \n2. SQL Game \n3. Exit";
+    public static final String LOGIN = "Please login to continue:\nEnter Username:";
 
     public MainProgram() {
         userManager = new UserManager();
@@ -16,8 +19,7 @@ public class MainProgram {
     }
 
     public void start() {
-        System.out.println("Welcome to the Developer Skills Tainer!");
-        System.out.println("Please login to continue:");
+        System.out.println(WELCOME_MESSAGE);
 
         User currentUser = null;
 
@@ -31,12 +33,8 @@ public class MainProgram {
 
             switch(optionAsInt) {
                 case 1:
-                    System.out.println("Please login to continue:");
-                    System.out.println("Enter username:");
-                    String username = scanner.nextLine();
-
-                    System.out.println("Enter password:");
-                    String password = scanner.nextLine();
+                    String username = inputUsername();
+                    String password = inputPassword();
 
                     currentUser = userManager.loginUser(username, password);
                     if (currentUser == null) {
@@ -44,33 +42,23 @@ public class MainProgram {
                     }
                     break;
                 case 2:
-                    System.out.println("Please Register: \n Enter Username: ");
-                    String newUsername = scanner.nextLine();
-
-                    System.out.println("Create a Password:");
-                    String newPassword = scanner.nextLine();
-
-                    currentUser = userManager.registerUser(newUsername, newPassword);
+                    currentUser = registerNewUser();
                     if(currentUser == null) {
                         System.out.println("Registration failed, please try again.");
                     }
                     break;
-
                 default:
                     System.out.println("Invalid Option, please try again!");
             }
         }
-
-
+        showMenu(currentUser);
     }
 
     private void showMenu(User currentUser) {
         int intChoice;
         do {
-            System.out.println("Please choose an option:");
-            System.out.println("1. Bash Trainer");
-            System.out.println("2. SQL Game");
-            System.out.println("3. Exit");
+            System.out.println("Welcome " + currentUser.getUserName() + "! Please choose an option:");
+            System.out.println(GAME_MENU);
 
             String selection = scanner.nextLine();
             intChoice = Integer.parseInt(selection);
@@ -90,6 +78,33 @@ public class MainProgram {
                     System.out.println("Invalid choice. Please choose a Valid Option");
             }
         } while (intChoice != 3);
+    }
+
+    public String inputUsername() {
+        System.out.println(LOGIN);
+        String username = scanner.nextLine();
+        return username;
+    }
+
+    public String inputPassword() {
+        System.out.println("Enter password:");
+        String password = scanner.nextLine();
+        return password;
+    }
+
+    public User registerNewUser() {
+        System.out.println("Please Register: \n Enter Username: ");
+        String newUsername = scanner.nextLine();
+
+        if (userManager.usernameExists(newUsername)) {
+            System.out.println("Username already taken, please try again.");
+            return null;
+        }
+
+        System.out.println("Create a Password:");
+        String newPassword = scanner.nextLine();
+
+        return userManager.registerUser(newUsername, newPassword);
     }
 
     public static void main(String[] args) {

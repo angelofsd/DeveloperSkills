@@ -4,40 +4,50 @@ public class MainProgram {
 
     private UserManager userManager;
     private BashTrainer bashTrainer;
+    private ScreenManager screenManager = new ScreenManager();
     private SQLGame sqlGame;
     private Scanner scanner;
     public static final String WELCOME_MESSAGE = "Welcome to the Developer Skills Tainer!\nPlease login to continue:";
     public static final String GAME_MENU = "1. Bash Trainer \n2. SQL Game \n3. Exit";
     public static final String LOGIN = "Please login to continue:\nEnter Username:";
+    public static final String LOGIN_OR_REGISTER =  "1.Login\n2.Register as a New User\nChoose an Option: ";
 
     public MainProgram() {
         userManager = new UserManager();
         bashTrainer = new BashTrainer();
+        screenManager = new ScreenManager();
         sqlGame = new SQLGame();
         scanner = new Scanner(System.in);
 
     }
 
     public void start() {
-        System.out.println(WELCOME_MESSAGE);
+        screenManager.printInColor(WELCOME_MESSAGE, "yellow");
 
         User currentUser = null;
 
         while (currentUser == null) {
 
-            System.out.println("1.Login");
-            System.out.println("2.Register as a New User");
-            System.out.print("Choose an option: ");
-            String option = scanner.nextLine();
-            int optionAsInt = Integer.parseInt(option);
-
+            System.out.println(LOGIN_OR_REGISTER);
+            int optionAsInt = 0;
+            try {
+                String option = scanner.nextLine();
+                optionAsInt = Integer.parseInt(option);
+                if (!(optionAsInt == 1) && !(optionAsInt == 2)) {
+                    throw new IllegalArgumentException("Invalid Choice!");
+                }
+            } catch (IllegalArgumentException e) {
+                System.err.println("This is not a valid input!");
+            }
             switch(optionAsInt) {
                 case 1:
                     String username = inputUsername();
                     String password = inputPassword();
-
-                    currentUser = userManager.loginUser(username, password);
-                    if (currentUser == null) {
+                    boolean isAuthorized = userManager.isAuthenticated(username, password);
+                    if (isAuthorized) {
+                        currentUser = userManager.loginUser(username, password);
+                    }
+                    if (currentUser == null || !isAuthorized) {
                         System.out.println("invalid credentials, please try again");
                     }
                     break;
@@ -56,10 +66,14 @@ public class MainProgram {
 
     private void showMenu(User currentUser) {
         int intChoice;
+
+        screenManager.clearScreen();
         do {
             System.out.println("Welcome " + currentUser.getUserName() + "! Please choose an option:");
             System.out.println(GAME_MENU);
+            screenManager.skipLines(11);
 
+            System.out.print(">");
             String selection = scanner.nextLine();
             intChoice = Integer.parseInt(selection);
 
@@ -77,6 +91,7 @@ public class MainProgram {
                 default:
                     System.out.println("Invalid choice. Please choose a Valid Option");
             }
+
         } while (intChoice != 3);
     }
 

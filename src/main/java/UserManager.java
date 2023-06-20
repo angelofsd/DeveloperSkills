@@ -66,4 +66,11 @@ public class UserManager {
         return false;
     }
 
+    public boolean isAuthenticated(String username, String password) {
+        if (!usernameExists(username)) {
+            System.out.println("That user doesn't exist!");
+            return false;
+        }
+        return false;
+    }
 }

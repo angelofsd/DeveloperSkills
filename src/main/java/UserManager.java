@@ -20,7 +20,11 @@ public class UserManager {
     }
 
     public User loginUser(String username, String password) {
-        return new User(5,"Tommy","password");
+        if(isAuthenticated(username, password)) {
+            return getUser(username);
+        } else {
+            return null;
+        }
     }
 
     public int getNextUserID() {
@@ -50,27 +54,32 @@ public class UserManager {
         }
     }
 
-    public boolean usernameExists(String username) {
+    public User getUser(String username) {
         try (FileReader fr = new FileReader(USER_DATA_FILE); BufferedReader br = new BufferedReader(fr)) {
 
             String line;
-            while ((line = br.readLine()) != null) {   //see above comment for info on this syntax
+            while ((line = br.readLine()) != null) {
                 String[] rowOfUserData = line.split(",");
                 if (rowOfUserData.length > 1 && rowOfUserData[1].equals(username)) {
-                    return true;
+                    // return the User object for this row
+                    return new User(Integer.parseInt(rowOfUserData[0]), rowOfUserData[1], rowOfUserData[2]);
                 }
             }
         } catch (IOException e) {
             System.err.println("Error reading File!");
         }
-        return false;
+        return null; // return null if user not found
     }
 
     public boolean isAuthenticated(String username, String password) {
-        if (!usernameExists(username)) {
+        User user = getUser(username);
+        if(user == null){
             System.out.println("That user doesn't exist!");
             return false;
+        } else if(!user.getUserPassword().equals(password)){
+            System.out.println("Invalid password!");
+            return false;
         }
-        return false;
+        return true;
     }
 }

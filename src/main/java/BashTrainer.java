@@ -24,6 +24,9 @@ public class BashTrainer {
             screenManager.printInColor(currentDirectory, "red");
             System.out.print("$");
             command = consoleInput.nextLine();
+
+            //split the command into words so that arguments and flags can eventually be implemented
+            String[] fullCommand = command.split(" ");
         } while (!command.equalsIgnoreCase("exit"));
 
 

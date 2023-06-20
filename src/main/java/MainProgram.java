@@ -27,7 +27,6 @@ public class MainProgram {
         User currentUser = null;
 
         while (currentUser == null) {
-
             System.out.println(LOGIN_OR_REGISTER);
             int optionAsInt = 0;
             try {
@@ -38,8 +37,9 @@ public class MainProgram {
                 }
             } catch (IllegalArgumentException e) {
                 System.err.println("This is not a valid input!");
+                continue; // Go back to the start of the loop
             }
-            switch(optionAsInt) {
+            switch (optionAsInt) {
                 case 1:
                     String username = inputUsername();
                     String password = inputPassword();
@@ -48,12 +48,12 @@ public class MainProgram {
                         currentUser = userManager.loginUser(username, password);
                     }
                     if (currentUser == null || !isAuthorized) {
-                        System.out.println("invalid credentials, please try again");
+                        System.out.println("Invalid credentials, please try again");
                     }
                     break;
                 case 2:
                     currentUser = registerNewUser();
-                    if(currentUser == null) {
+                    if (currentUser == null) {
                         System.out.println("Registration failed, please try again.");
                     }
                     break;
@@ -61,6 +61,8 @@ public class MainProgram {
                     System.out.println("Invalid Option, please try again!");
             }
         }
+
+        // After successful login or registration, show the menu
         showMenu(currentUser);
     }
 
@@ -111,15 +113,14 @@ public class MainProgram {
         System.out.println("Please Register: \n Enter Username: ");
         String newUsername = scanner.nextLine();
 
-        if (userManager.usernameExists(newUsername)) {
-            System.out.println("Username already taken, please try again.");
-            return null;
-        }
-
         System.out.println("Create a Password:");
         String newPassword = scanner.nextLine();
 
-        return userManager.registerUser(newUsername, newPassword);
+        User newUser = userManager.registerUser(newUsername, newPassword);
+        if(newUser == null) {
+            System.out.println("Username already taken or password is invalid, please try again.");
+        }
+        return newUser;
     }
 
     public static void main(String[] args) {
